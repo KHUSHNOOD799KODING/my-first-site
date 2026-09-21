@@ -17,7 +17,7 @@ function App() {
           <h1>KHUSHNOOD KHAN</h1>
         </div>
         <div>
-          <h1>Hello From Azure</h1>
+          <h1>Hello From Azure 123456</h1>
           <p>
             Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
           </p>
