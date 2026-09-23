@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
+import ApiTest from '../components/ApiTest';
 
 /*
   ADD / EDIT PROJECTS HERE.
@@ -220,6 +221,7 @@ export default function App() {
 
   return (
     <div className="page">
+      <ApiTest />
       <div className="ambient" aria-hidden="true" />
 
       <header className="hero">
