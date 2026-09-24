@@ -1,6 +1,13 @@
+import { Routes, Route, Link } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import ApiTest from '../components/ApiTest';
+import Weather from "./weather/weather";
+
+// <Routes>
+//   <Route path="/" element={<HomeContent />} />
+//   <Route path="/weather/weather" element={<Weather />} />
+// </Routes>
 
 /*
   ADD / EDIT PROJECTS HERE.
@@ -18,7 +25,7 @@ const projects = [
     status: "live",
     tags: ["React", "OpenWeather API", "Chart.js"],
     accent: "#22d3ee",
-    path: "/projects/weather",
+    path: "/weather/weather",
     featured: true,
   },
   {
@@ -105,9 +112,9 @@ function ProjectCard({ project }) {
 
   return (
     // Later: swap <a href> for <Link to> from react-router-dom
-    <a
+    <Link
       className={`card${project.featured ? " card--wide" : ""}`}
-      href={project.path}
+      to={project.path}
       onMouseMove={handleMove}
       style={{ "--accent": project.accent }}
     >
@@ -128,7 +135,7 @@ function ProjectCard({ project }) {
           <li key={tag}>{tag}</li>
         ))}
       </ul>
-    </a>
+    </Link>
   );
 }
 
@@ -207,8 +214,9 @@ function useTypedTitle(text, speed = 70) {
   return [shown, type];
 }
 
-export default function App() {
-  const [filter, setFilter] = useState("All");
+function HomeContent(){
+
+   const [filter, setFilter] = useState("All");
   const [typed, replay] = useTypedTitle(TITLE);
   const isTyping = typed.length < TITLE.length;
 
@@ -218,9 +226,8 @@ export default function App() {
   );
 
   const visible = projects.filter((p) => filter === "All" || p.type === filter);
-
-  return (
-    <div className="page">
+return(
+<div className="page">
       <ApiTest />
       <div className="ambient" aria-hidden="true" />
 
@@ -265,5 +272,13 @@ export default function App() {
         {visible.length} {visible.length === 1 ? "project" : "projects"} shown
       </footer>
     </div>
+);
+}
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomeContent />} />
+      <Route path="/weather/weather" element={<Weather />} />
+    </Routes>
   );
 }
