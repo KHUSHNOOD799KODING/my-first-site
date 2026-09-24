@@ -229,7 +229,7 @@ function HomeContent(){
   const visible = projects.filter((p) => filter === "All" || p.type === filter);
 return(
 <div className="page">
-      <ApiTest />
+      {/* <ApiTest /> */}
       <div className="ambient" aria-hidden="true" />
 
       <header className="hero">
