@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import ApiTest from '../components/ApiTest';
 import Weather from "./weather/weather";
+import NeonSnake from "./neonsnake/neon";
 
 // <Routes>
 //   <Route path="/" element={<HomeContent />} />
@@ -29,8 +30,8 @@ const projects = [
     featured: true,
   },
   {
-    id: "expense",
-    title: "Expense Splitter",
+    id: "Game1",
+    title: "Game Unknown",
     blurb: "Split trip costs with friends and see who owes whom.",
     glyph: "Ex",
     type: "Tool",
@@ -48,7 +49,7 @@ const projects = [
     status: "live",
     tags: ["JavaScript", "Canvas"],
     accent: "#f472b6",
-    path: "/projects/neon-snake",
+    path: "/neonsnake/neon",
   },
   {
     id: "notes",
@@ -279,6 +280,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<HomeContent />} />
       <Route path="/weather/weather" element={<Weather />} />
+      <Route path="/neonsnake/neon" element={<NeonSnake />} />
     </Routes>
   );
 }
