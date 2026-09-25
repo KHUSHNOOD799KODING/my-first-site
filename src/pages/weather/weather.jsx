@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import "./Weather.css";
+import "./weather.css";
 
 // Put your key in a .env file as VITE_WEATHER_API_KEY (OpenWeatherMap)
 const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
