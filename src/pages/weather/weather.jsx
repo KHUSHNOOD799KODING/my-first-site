@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import "./weather.css";
+import "./Weather.css";
 
 // Put your key in a .env file as VITE_WEATHER_API_KEY (OpenWeatherMap)
 const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
@@ -17,8 +17,18 @@ const CONDITION_MAP = {
   Haze: { mood: "cloudy", icon: "🌫️" },
 };
 
-function getCondition(main) {
-  return CONDITION_MAP[main] || { mood: "cloudy", icon: "🌤️" };
+function getCondition(main, isNight) {
+  const base = CONDITION_MAP[main] || { mood: "cloudy", icon: "🌤️" };
+
+  if (main === "Clear") {
+    return isNight ? { mood: "clear-night", icon: "🌙" } : base;
+  }
+  if (main === "Clouds") {
+    return isNight
+      ? { mood: "cloudy", icon: "☁️" }
+      : { mood: "cloudy", icon: "⛅" };
+  }
+  return base;
 }
 
 // Builds an array of randomized raindrops/snowflakes so each one falls
@@ -75,11 +85,21 @@ function SnowLayer() {
   );
 }
 
-function SunLayer() {
+function SunLayer({ faded }) {
   return (
-    <div className="fx-sun" aria-hidden="true">
+    <div className={`fx-sun${faded ? " fx-sun--faded" : ""}`} aria-hidden="true">
       <div className="sun-core" />
       <div className="sun-rays" />
+    </div>
+  );
+}
+
+// A single, larger cloud that drifts directly across the sun's position,
+// covering it and revealing it again — the "sun hiding behind clouds" look.
+function PeekCloudLayer() {
+  return (
+    <div className="fx-peek-cloud" aria-hidden="true">
+      <div className="peek-cloud" />
     </div>
   );
 }
@@ -127,6 +147,69 @@ function WindLayer() {
   );
 }
 
+// Turns a country code like "IN" into "India"
+const regionNames =
+  typeof Intl !== "undefined" && Intl.DisplayNames
+    ? new Intl.DisplayNames(["en"], { type: "region" })
+    : null;
+
+function fullCountryName(code) {
+  try {
+    return regionNames?.of(code) || code;
+  } catch {
+    return code;
+  }
+}
+
+// Formats a live clock for the searched city using OpenWeatherMap's
+// UTC offset (data.timezone, in seconds) rather than the visitor's own clock.
+function useCityClock(timezoneOffsetSeconds) {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  if (timezoneOffsetSeconds == null) return null;
+
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  const cityTime = new Date(utcMs + timezoneOffsetSeconds * 1000);
+
+  return cityTime.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
+// setData(json)
+function StarsLayer() {
+  const stars = useParticles(70, "star");
+  return (
+    <div className="fx-stars" aria-hidden="true">
+      {stars.map((s, i) => (
+        <span
+          key={s.id}
+          className="star"
+          style={{
+            left: `${s.left}%`,
+            top: `${(s.duration * 40 + i * 7) % 60}%`,
+            animationDelay: `${s.delay}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function MoonLayer() {
+  return (
+    <div className="fx-moon" aria-hidden="true">
+      <div className="moon-core" />
+    </div>
+  );
+}
+
 export default function Weather() {
   const [city, setCity] = useState("");
   const [data, setData] = useState(null);
@@ -150,6 +233,8 @@ export default function Weather() {
       if (!res.ok) throw new Error("City not found");
       const json = await res.json();
       setData(json);
+      // json.weather[0].main = "Thunderstorm"; // TEMP: force storm for testing
+      // setData(json);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -157,15 +242,42 @@ export default function Weather() {
     }
   };
 
-  const condition = data ? getCondition(data.weather[0].main) : null;
+  // "dt" is current time at the city (UTC), compared against sunrise/sunset
+  const isNight =
+    !!data && (data.dt < data.sys.sunrise || data.dt > data.sys.sunset);
+
+  const condition = data ? getCondition(data.weather[0].main, isNight) : null;
   const windSpeed = data ? data.wind.speed : 0;
   const isWindy = windSpeed >= 8; // m/s — noticeably fast wind
 
+  const cityTime = useCityClock(data?.timezone);
+  const countryName = data ? fullCountryName(data.sys.country) : "";
+
   return (
-    <div className={`weather-page${condition ? ` mood-${condition.mood}` : ""}`}>
+    <div
+      className={`weather-page${condition ? ` mood-${condition.mood}` : ""}${isNight ? " is-night" : ""
+        }`}
+    >
       {/* ---- animated background layers ---- */}
       <div className="fx-ambient" aria-hidden="true" />
-      {condition?.mood === "sunny" && <SunLayer />}
+
+      {isNight ? (
+        <>
+          <StarsLayer />
+          <MoonLayer />
+        </>
+      ) : (
+        <>
+          {condition?.mood === "sunny" && <SunLayer />}
+          {condition?.mood === "cloudy" && (
+            <>
+              <SunLayer faded />
+              <PeekCloudLayer />
+            </>
+          )}
+        </>
+      )}
+
       {condition?.mood === "cloudy" && <CloudLayer />}
       {condition?.mood === "rainy" && (
         <>
@@ -231,9 +343,14 @@ export default function Weather() {
               <div className="weather-icon">{condition.icon}</div>
               <div>
                 <h2 className="weather-city">
-                  {data.name}, {data.sys.country}
+                  {data.name}, {countryName}
                 </h2>
                 <p className="weather-desc">{data.weather[0].description}</p>
+                {cityTime && (
+                  <p className="weather-time">
+                    {condition.icon} Local time: {cityTime}
+                  </p>
+                )}
               </div>
               <p className="weather-temp">{Math.round(data.main.temp)}°C</p>
             </div>
