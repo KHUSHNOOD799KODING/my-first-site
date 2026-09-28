@@ -4,6 +4,7 @@ import "./App.css";
 import ApiTest from '../components/ApiTest';
 import Weather from "./weather/weather";
 import NeonSnake from "./neonsnake/neon";
+import Universe from "../components/Universe";
 
 // <Routes>
 //   <Route path="/" element={<HomeContent />} />
@@ -230,7 +231,8 @@ function HomeContent(){
 return(
 <div className="page">
       {/* <ApiTest /> */}
-      <div className="ambient" aria-hidden="true" />
+      {/* <div className="ambient" aria-hidden="true" /> */}
+      <Universe />
 
       <header className="hero">
         <h1

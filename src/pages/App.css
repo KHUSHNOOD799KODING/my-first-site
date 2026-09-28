@@ -140,8 +140,11 @@ body {
   min-height: 210px;
   color: inherit;
   text-decoration: none;
-  background: var(--surface);
+  /* background: var(--surface); */
+  background: rgba(17, 13, 31, 0.68);
+  backdrop-filter: blur(1px);
   border: 1px solid var(--line);
+  /* border: 2px solid whitesmoke; */
   border-radius: 18px;
   overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -153,11 +156,9 @@ body {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(
-    320px circle at var(--mx) var(--my),
-    color-mix(in srgb, var(--accent) 22%, transparent),
-    transparent 70%
-  );
+  background: radial-gradient(320px circle at var(--mx) var(--my),
+      color-mix(in srgb, var(--accent) 22%, transparent),
+      transparent 70%);
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
@@ -170,11 +171,9 @@ body {
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: radial-gradient(
-    200px circle at var(--mx) var(--my),
-    var(--accent),
-    transparent 70%
-  );
+  background: radial-gradient(200px circle at var(--mx) var(--my),
+      var(--accent),
+      transparent 70%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
@@ -196,7 +195,7 @@ body {
   opacity: 1;
 }
 
-.card > * {
+.card>* {
   position: relative;
   z-index: 1;
 }
@@ -277,12 +276,15 @@ body {
 .status--live {
   color: #34d399;
 }
+
 .status--live::before {
   box-shadow: 0 0 10px #34d399;
 }
+
 .status--building {
   color: #fbbf24;
 }
+
 .status--idea {
   color: var(--muted);
 }
@@ -301,18 +303,21 @@ body {
   .page {
     padding-top: 48px;
   }
+
   .card--wide {
     grid-column: auto;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .card,
   .card::before,
   .card::after,
   .chip {
     transition: none;
   }
+
   .card:hover,
   .card:focus-visible {
     transform: none;
@@ -322,7 +327,8 @@ body {
 /* ---------- typing title ---------- */
 
 .hero__title {
-  min-height: 2.2em; /* stops the page jumping while text is typed */
+  min-height: 2.2em;
+  /* stops the page jumping while text is typed */
   cursor: pointer;
 }
 

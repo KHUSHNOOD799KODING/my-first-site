@@ -1,0 +1,50 @@
+.universe {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 115%, #1b1044 0%, #0b0720 42%, #04030a 100%);
+}
+
+/* colourful gas clouds that slowly breathe and drift */
+.universe__nebula {
+  position: absolute;
+  inset: -20%;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(38% 30% at 18% 24%, rgba(139, 92, 246, 0.3), transparent 70%),
+    radial-gradient(34% 28% at 82% 20%, rgba(34, 211, 238, 0.2), transparent 70%),
+    radial-gradient(40% 32% at 70% 78%, rgba(244, 114, 182, 0.2), transparent 70%),
+    radial-gradient(30% 26% at 26% 82%, rgba(59, 130, 246, 0.2), transparent 70%);
+  filter: blur(30px);
+  animation: nebula-drift 70s ease-in-out infinite alternate;
+}
+
+@keyframes nebula-drift {
+  from {
+    transform: translate3d(-2%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(2%, 2%, 0) scale(1.08);
+  }
+}
+
+.universe__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/* darkens the edges so the eye stays on the cards */
+.universe__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(2, 1, 8, 0.6) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .universe__nebula {
+    animation: none;
+  }
+}
