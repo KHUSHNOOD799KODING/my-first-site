@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import "./weather.css";
+import Universe from "../Universe/Universe";
 
 // Put your key in a .env file as VITE_WEATHER_API_KEY (OpenWeatherMap)
 const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
@@ -255,11 +256,12 @@ export default function Weather() {
 
   return (
     <div
-      className={`weather-page${condition ? ` mood-${condition.mood}` : ""}${isNight ? " is-night" : ""
-        }`}
+    className={`weather-page${condition ? ` mood-${condition.mood}` : ""}${isNight ? " is-night" : ""
+    }`}
     >
       {/* ---- animated background layers ---- */}
       <div className="fx-ambient" aria-hidden="true" />
+      <Universe/>
 
       {isNight ? (
         <>

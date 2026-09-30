@@ -4,7 +4,7 @@ import "./App.css";
 import ApiTest from '../components/ApiTest';
 import Weather from "./weather/weather";
 import NeonSnake from "./neonsnake/neon";
-import Universe from "../components/Universe";
+import Universe from "./Universe/Universe";
 
 // <Routes>
 //   <Route path="/" element={<HomeContent />} />
