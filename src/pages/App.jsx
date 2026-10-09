@@ -1,22 +1,15 @@
 import { Routes, Route, Link } from "react-router-dom";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+// import ApiTest from '../components/ApiTest';
 import "./App.css";
-import ApiTest from '../components/ApiTest';
-import Weather from "./weather/weather";
-import NeonSnake from "./neonsnake/neon";
 import Universe from "./Universe/Universe";
+import { lazy, Suspense } from "react";
 
-// <Routes>
-//   <Route path="/" element={<HomeContent />} />
-//   <Route path="/weather/weather" element={<Weather />} />
-// </Routes>
+const Weather = lazy(() => import("./weather/weather"));
+const NeonSnake = lazy(() => import("./neonsnake/neon"));
+const Calculator = lazy(() => import("./Calculator1/Calculator1"));
+const Notes = lazy(() => import("./notes/Notes"));
 
-/*
-  ADD / EDIT PROJECTS HERE.
-  - path:  where the card opens (change later to your real routes)
-  - accent: the glow colour of that card
-  - featured: true makes the card wider
-*/
 const projects = [
   {
     id: "weather",
@@ -30,17 +23,7 @@ const projects = [
     path: "/weather/weather",
     featured: true,
   },
-  {
-    id: "Game1",
-    title: "Game Unknown",
-    blurb: "Split trip costs with friends and see who owes whom.",
-    glyph: "Ex",
-    type: "Tool",
-    status: "live",
-    tags: ["React", "Node", "MongoDB"],
-    accent: "#a78bfa",
-    path: "/projects/expense-splitter",
-  },
+
   {
     id: "snake",
     title: "Neon Snake",
@@ -52,17 +35,44 @@ const projects = [
     accent: "#f472b6",
     path: "/neonsnake/neon",
   },
+
+  {
+    id: "Calculator1",
+    title: "All-in-one-Calculator",
+    blurb: "A glowing scientific calculator with memory, history, and keyboard support.",
+    glyph: "Cx",
+    type: "Tool",
+    status: "live",
+    tags: ["React", "JavaScript"],
+    accent: "#fbbf24",
+    path: "/Calculator1/Calculator1",
+    featured: true,
+  },
+
   {
     id: "notes",
     title: "Markdown Notes",
-    blurb: "Write notes in Markdown with a live preview and search.",
+    blurb: "Write notes in Markdown with live preview and local save.",
     glyph: "Md",
     type: "Tool",
-    status: "building",
+    status: "live",
     tags: ["React", "LocalStorage"],
     accent: "#60a5fa",
-    path: "/projects/markdown-notes",
+    path: "/notes/notes",
   },
+
+  {
+    id: "Game1",
+    title: "Game Unknown",
+    blurb: "Split trip costs with friends and see who owes whom.",
+    glyph: "Ex",
+    type: "Tool",
+    status: "live",
+    tags: ["React", "Node", "MongoDB"],
+    accent: "#a78bfa",
+    path: "/projects/expense-splitter",
+  },
+
   {
     id: "quiz",
     title: "Quiz Maker",
@@ -216,9 +226,10 @@ function useTypedTitle(text, speed = 70) {
   return [shown, type];
 }
 
-function HomeContent(){
+function HomeContent() {
 
-   const [filter, setFilter] = useState("All");
+  const [universeOn, setUniverseOn] = useState(false);
+  const [filter, setFilter] = useState("All");
   const [typed, replay] = useTypedTitle(TITLE);
   const isTyping = typed.length < TITLE.length;
 
@@ -228,11 +239,11 @@ function HomeContent(){
   );
 
   const visible = projects.filter((p) => filter === "All" || p.type === filter);
-return(
-<div className="page">
+  return (
+    <div className="page">
       {/* <ApiTest /> */}
       {/* <div className="ambient" aria-hidden="true" /> */}
-      <Universe />
+      {universeOn && <Universe />}
 
       <header className="hero">
         <h1
@@ -262,6 +273,13 @@ return(
               {t}
             </button>
           ))}
+          <button
+            type="button"
+            className={`chip chip--universe${universeOn ? " chip--on" : ""}`}
+            onClick={() => setUniverseOn((v) => !v)}
+          >
+            ✨ Universe
+          </button>
         </div>
       </header>
 
@@ -275,14 +293,18 @@ return(
         {visible.length} {visible.length === 1 ? "project" : "projects"} shown
       </footer>
     </div>
-);
+  );
 }
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomeContent />} />
-      <Route path="/weather/weather" element={<Weather />} />
-      <Route path="/neonsnake/neon" element={<NeonSnake />} />
-    </Routes>
+    <Suspense fallback={<div style={{ padding: 40, color: "#fff" }}>Loading…</div>}>
+      <Routes>
+        <Route path="/" element={<HomeContent />} />
+        <Route path="/weather/weather" element={<Weather />} />
+        <Route path="/neonsnake/neon" element={<NeonSnake />} />
+        <Route path="/Calculator1/Calculator1" element={<Calculator />} />
+        <Route path="/notes/notes" element={<Notes />} />
+      </Routes>
+    </Suspense>
   );
 }

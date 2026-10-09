@@ -34,6 +34,7 @@ body {
   margin: 0 auto;
   padding: 72px 24px 48px;
   isolation: isolate;
+  background: radial-gradient(ellipse at 50% 115%, #160041 30%, #060120 42%, #11011e 80%);
 }
 
 /* soft coloured light behind everything */
@@ -105,7 +106,7 @@ body {
   color: #fff;
   border-color: var(--violet);
   background: rgba(139, 92, 246, 0.16);
-  box-shadow: 0 0 18px rgba(139, 92, 246, 0.45);
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.45);
 }
 
 .chip:focus-visible,
@@ -354,4 +355,14 @@ body {
   .hero__title.is-typing::after {
     animation: none;
   }
+}
+
+.chip--universe {
+  border-color: rgba(139, 92, 246, 0.75);
+  /* background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(34, 211, 238, 0.12)); */
+}
+
+.chip--universe.chip--on {
+  border-color: var(--cyan);
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.5);
 }
