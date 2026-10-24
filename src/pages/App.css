@@ -223,6 +223,14 @@ body {
   text-shadow: 0 0 12px var(--accent);
 }
 
+.chip--link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  border: 2px solid rgb(24, 243, 163);
+
+}
+
 .card__title {
   margin: 0 0 6px;
   font-family: var(--font-display);

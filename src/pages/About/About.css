@@ -1,0 +1,656 @@
+/* =====================================================================
+   About / Portfolio page — dark, glowy, light on CPU.
+   Only transform + opacity are animated. No blur filters, no canvas.
+   ===================================================================== */
+
+.ab-page {
+  --bg: #05040a;
+  --text: #ece9f7;
+  --muted: #9b93b8;
+  --line: rgba(255, 255, 255, 0.09);
+  --violet: #8b5cf6;
+  --cyan: #22d3ee;
+  --pink: #f472b6;
+
+  position: relative;
+  min-height: 100vh;
+  color: var(--text);
+  font-family: "Figtree", system-ui, sans-serif;
+  background: var(--bg);
+  overflow-x: hidden;
+}
+
+.ab-page * {
+  box-sizing: border-box;
+}
+
+/* ---------- background layers ---------- */
+
+.ab-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(700px 500px at 12% 8%, rgba(139, 92, 246, 0.18), transparent 70%),
+    radial-gradient(600px 460px at 92% 40%, rgba(34, 211, 238, 0.12), transparent 70%),
+    radial-gradient(ellipse at 50% 115%, #1b1044 0%, #0b0720 42%, #04030a 100%);
+}
+
+/* scroll progress bar */
+.ab-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 50;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--cyan), var(--violet), var(--pink));
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.8);
+}
+
+/* soft light that follows the cursor (mouse devices only) */
+.ab-spot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.ab-spot::before {
+  content: "";
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  margin: -210px 0 0 -210px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.22), transparent 65%);
+}
+
+@media (hover: none) {
+  .ab-spot {
+    display: none;
+  }
+}
+
+/* ---------- 3D skills ring (10 faces, centred) ---------- */
+
+.ab-fx {
+  --scroll: 0;
+  --px: 0;
+  --py: 0;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  z-index: 0;
+  pointer-events: none;
+  perspective: 1100px;
+  opacity: 0.4; /* sits behind the text; raise for a bolder look */
+}
+
+.ab-ring {
+  --w: clamp(90px, 15vw, 170px); /* width of one face */
+  --r: calc(var(--w) * 1.5388);  /* radius of a 10-sided ring: w / (2 * tan(18deg)) */
+  position: absolute;
+  width: var(--w);
+  height: calc(var(--w) * 1.15);
+  margin: calc(var(--w) * -0.575) 0 0 calc(var(--w) / -2);
+  transform-style: preserve-3d;
+  transform: rotateX(calc(var(--py) * -14deg - 12deg))
+    rotateY(calc(var(--scroll) * 1080deg + var(--px) * 25deg));
+  transition: transform 0.25s ease-out;
+}
+
+.ab-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: "Sora", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(0.65rem, 1.4vw, 0.85rem);
+  color: #fff;
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 9%, rgba(8, 6, 18, 0.7));
+  box-shadow: 0 0 22px color-mix(in srgb, var(--accent) 45%, transparent),
+    inset 0 0 18px color-mix(in srgb, var(--accent) 25%, transparent);
+  transform: rotateY(calc(var(--i) * 36deg)) translateZ(var(--r));
+  backface-visibility: hidden;
+}
+
+.ab-face .ab-icon {
+  width: 46%;
+  height: auto;
+}
+
+/* ---------- logos ---------- */
+
+.ab-icon {
+  display: block;
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+}
+
+.ab-icon--invert {
+  filter: invert(1);
+}
+
+.ab-icon-fallback {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ---------- top bar ---------- */
+
+.ab-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px clamp(14px, 4vw, 40px);
+  background: linear-gradient(180deg, rgba(5, 4, 10, 0.85), transparent);
+}
+
+.ab-back {
+  font-size: 0.9rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.ab-back:hover {
+  color: var(--cyan);
+}
+
+.ab-pill {
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.ab-pill--on {
+  color: #fff;
+  border-color: var(--cyan);
+  background: rgba(34, 211, 238, 0.14);
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.35);
+}
+
+/* ---------- layout ---------- */
+
+.ab-main {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 40px);
+}
+
+.ab-section {
+  padding: clamp(60px, 11vh, 120px) 0 0;
+  scroll-margin-top: 20px;
+}
+
+.ab-h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 0 0 clamp(24px, 5vw, 40px);
+  font-family: "Sora", system-ui, sans-serif;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  color: #fff;
+  text-shadow: 0 0 24px rgba(139, 92, 246, 0.45);
+}
+
+.ab-h2--center {
+  justify-content: center;
+}
+
+.ab-kicker {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cyan);
+  text-shadow: 0 0 12px rgba(34, 211, 238, 0.8);
+}
+
+/* ---------- scroll reveal (3D flip-in) ---------- */
+
+[data-reveal] {
+  opacity: 0;
+  transform: perspective(800px) rotateX(22deg) translateY(44px);
+  transform-origin: 50% 100%;
+  transition: opacity 0.7s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: calc(var(--d, 0) * 90ms);
+}
+
+[data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- hero ---------- */
+
+.ab-hero {
+  --px: 0;
+  --py: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 70px;
+}
+
+.ab-eyebrow {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  text-shadow: 0 0 14px rgba(34, 211, 238, 0.8);
+}
+
+.ab-name {
+  margin: 0;
+  font-family: "Sora", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.6rem, 11vw, 6.5rem);
+  line-height: 1.02;
+  color: #fff;
+  perspective: 700px;
+}
+
+/* each word drifts a little with the cursor → depth */
+.ab-word {
+  display: inline-block;
+  transform: translate3d(calc(var(--px) * -10px), calc(var(--py) * -6px), 0);
+  transition: transform 0.2s ease-out;
+}
+
+/* each letter pops forward when the cursor passes over it */
+.ab-letter {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.2, 1.4, 0.4, 1), color 0.3s, text-shadow 0.3s;
+}
+
+.ab-letter:hover {
+  transform: translateY(-14px) translateZ(60px) rotateX(-25deg) rotate(-4deg);
+  color: var(--cyan);
+  text-shadow: 0 0 26px rgba(34, 211, 238, 0.95), 0 0 60px rgba(139, 92, 246, 0.8);
+}
+
+.ab-role {
+  margin: 14px 0 6px;
+  font-family: "Sora", system-ui, sans-serif;
+  font-size: clamp(1.05rem, 3vw, 1.6rem);
+  background: linear-gradient(90deg, var(--cyan), var(--violet), var(--pink));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ab-tagline {
+  max-width: 560px;
+  margin: 0 0 28px;
+  color: var(--muted);
+  font-size: clamp(0.95rem, 2.4vw, 1.1rem);
+  line-height: 1.6;
+}
+
+.ab-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ab-scrollhint {
+  margin: 40px 0 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  animation: ab-bob 1.8s ease-in-out infinite;
+}
+
+@keyframes ab-bob {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(8px); opacity: 1; }
+}
+
+/* ---------- buttons ---------- */
+
+.ab-btn {
+  display: inline-block;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 11px 22px;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s, color 0.2s;
+}
+
+.ab-btn:hover {
+  transform: translateY(-3px);
+  color: #fff;
+  border-color: var(--cyan);
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.35);
+}
+
+.ab-btn--primary {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  box-shadow: 0 0 22px rgba(139, 92, 246, 0.45);
+}
+
+.ab-btn--big {
+  font-size: 1.1rem;
+  padding: 15px 34px;
+}
+
+/* magnetic wrapper */
+.ab-magnet {
+  display: inline-block;
+  padding: 24px; /* bigger "pull zone" around the button */
+  margin: -24px;
+}
+
+.ab-magnet__in {
+  display: inline-block;
+  transition: transform 0.2s ease-out;
+}
+
+/* ---------- 3D tilt card ---------- */
+
+.ab-tilt {
+  --rx: 0deg;
+  --ry: 0deg;
+  --gx: 50%;
+  --gy: 50%;
+  --accent: var(--violet);
+  height: 100%;
+  perspective: 800px;
+}
+
+.ab-tilt__in {
+  position: relative;
+  height: 100%;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: rgba(17, 13, 31, 0.75);
+  overflow: hidden;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.15s ease-out, border-color 0.25s, box-shadow 0.25s;
+}
+
+/* moving glare under the cursor */
+.ab-tilt__in::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s;
+  background: radial-gradient(260px circle at var(--gx) var(--gy), color-mix(in srgb, var(--accent) 38%, transparent), transparent 65%);
+}
+
+.ab-tilt:hover .ab-tilt__in {
+  border-color: var(--accent);
+  box-shadow: 0 0 28px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.ab-tilt:hover .ab-tilt__in::before {
+  opacity: 1;
+}
+
+.ab-tilt__in > * {
+  position: relative;
+}
+
+/* ---------- card contents ---------- */
+
+.ab-glyph {
+  display: inline-grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 12px;
+  font-family: "Sora", system-ui, sans-serif;
+  font-weight: 700;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.ab-h3 {
+  margin: 0 0 6px;
+  font-family: "Sora", system-ui, sans-serif;
+  font-size: 1.05rem;
+  color: #fff;
+}
+
+.ab-note {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.ab-text {
+  margin: 0 0 16px;
+  font-size: clamp(0.95rem, 2.4vw, 1.08rem);
+  line-height: 1.75;
+  color: var(--text);
+}
+
+.ab-text--center {
+  text-align: center;
+  color: var(--muted);
+}
+
+.ab-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.ab-grid > div {
+  height: 100%;
+}
+
+.ab-grid--skills {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.ab-grid--work {
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.ab-project {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.ab-open {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  transition: transform 0.2s;
+}
+
+.ab-tilt:hover .ab-open {
+  transform: translateX(6px);
+}
+
+/* ---------- about section ---------- */
+
+.ab-about {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 860px) {
+  .ab-about {
+    grid-template-columns: 1.4fr 1fr;
+    align-items: start;
+  }
+}
+
+.ab-stats {
+  display: grid;
+  gap: 14px;
+}
+
+.ab-stat .ab-tilt__in {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ab-stat__n {
+  font-family: "Sora", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  color: var(--cyan);
+  text-shadow: 0 0 18px rgba(34, 211, 238, 0.6);
+}
+
+.ab-stat__l {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ---------- timeline ---------- */
+
+.ab-timeline {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 28px;
+}
+
+.ab-timeline::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--cyan), var(--violet), var(--pink));
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.7);
+}
+
+.ab-step {
+  position: relative;
+  margin-bottom: 26px;
+}
+
+.ab-step::before {
+  content: "";
+  position: absolute;
+  left: -28px;
+  top: 5px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--cyan);
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.9);
+}
+
+/* ---------- contact ---------- */
+
+.ab-contact {
+  text-align: center;
+  padding-bottom: 40px;
+}
+
+.ab-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.ab-footer {
+  position: relative;
+  z-index: 2;
+  padding: 30px 16px 40px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* ---------- phones ---------- */
+
+@media (max-width: 640px) {
+  .ab-fx {
+    opacity: 0.25;
+  }
+}
+
+/* ---------- motion switched off (toggle or reduced-motion setting) ---------- */
+
+.ab-off .ab-fx,
+.ab-off .ab-spot,
+.ab-off .ab-scrollhint {
+  display: none;
+}
+
+.ab-off [data-reveal] {
+  transform: none;
+  transition: opacity 0.4s ease;
+}
+
+.ab-off .ab-letter:hover,
+.ab-off .ab-btn:hover {
+  transform: none;
+}
+
+.ab-off .ab-word,
+.ab-off .ab-tilt__in {
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ab-scrollhint {
+    animation: none;
+  }
+  [data-reveal] {
+    transform: none;
+    transition: opacity 0.3s ease;
+  }
+}
