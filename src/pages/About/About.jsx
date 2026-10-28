@@ -17,7 +17,7 @@ const PROFILE = {
   email: "you@example.com", // ← put your real email
   links: [
     { label: "GitHub", href: "https://github.com/KHUSHNOOD799KODING" }, // ← your GitHub
-    { label: "LinkedIn", href: "https://www.linkedin.com/in/khushnood-k-92bb00228/" }, // ← your LinkedIn
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/khushnood-khan-92bb00228/" }, // ← your LinkedIn
     { label: "Live site", href: "https://www.khushnoodkhan.me" },
   ],
 };
