@@ -19,6 +19,7 @@ const PROFILE = {
     { label: "GitHub", href: "https://github.com/KHUSHNOOD799KODING" }, // ← your GitHub
     { label: "LinkedIn", href: "https://www.linkedin.com/in/khushnood-khan-92bb00228/" }, // ← your LinkedIn
     { label: "Live site", href: "https://www.khushnoodkhan.me" },
+    { label: "GitHub Portfolio", href: "https://khushnood799koding.github.io/Portfolio/" },
   ],
 };
 
@@ -37,6 +38,10 @@ const SKILLS = [
   { name: "GitHub Actions", icon: "githubactions/githubactions-original", note: "Auto-deploy on every push", accent: "#f472b6" },
   { name: "CSS", icon: "css3/css3-original", note: "Glow effects, animation, responsive layouts", accent: "#38bdf8" },
   { name: "HTML", icon: "html5/html5-original", note: "Semantic, accessible markup", accent: "#fb923c" },
+  { name: "Git", icon: "git/git-original", note: "Version control, branches, merges", accent: "#f87171" },
+  { name: "GitHub", icon: "github/github-original", invert: true, note: "Repos and pull requests", accent: "#e5e7eb" },
+  { name: "Linux", icon: "linux/linux-original", note: "Terminal, shell and file permissions", accent: "#fbbf24" },
+  { name: "PostgreSQL", icon: "postgresql/postgresql-original", note: "Queries, joins and relational design", accent: "#38bdf8" },
 ];
 
 // Logo image; if the CDN is unreachable it falls back to the first two letters
@@ -240,7 +245,7 @@ export default function About() {
 
       {/* 3D skills ring: centred, turns with scroll, tilts with the cursor */}
       <div className="ab-fx" ref={fxRef} aria-hidden="true">
-        <div className="ab-ring">
+        <div className="ab-ring" style={{ "--n": SKILLS.length }}>
           {SKILLS.map((s, i) => (
             <div key={s.name} className="ab-face" style={{ "--i": i, "--accent": s.accent }}>
               <SkillIcon skill={s} />

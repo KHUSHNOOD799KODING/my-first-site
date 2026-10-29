@@ -85,11 +85,11 @@
   --px: 0;
   --py: 0;
   position: fixed;
-  top: 50%;
+  top: 60%;
   left: 50%;
   width: 0;
   height: 0;
-  z-index: 0;
+  z-index: 10;
   pointer-events: none;
   perspective: 1100px;
   opacity: 0.4; /* sits behind the text; raise for a bolder look */
@@ -97,15 +97,16 @@
 
 .ab-ring {
   --w: clamp(90px, 15vw, 170px); /* width of one face */
-  --r: calc(var(--w) * 1.5388);  /* radius of a 10-sided ring: w / (2 * tan(18deg)) */
+  --r: calc(var(--w) / (2 * tan(180deg / var(--n))));  /* radius of a 10-sided ring: w / (2 * tan(18deg)) */
   position: absolute;
   width: var(--w);
   height: calc(var(--w) * 1.15);
+  /* margin: calc(var(--w) * -0.575) 0 0 calc(var(--w) / -2); */
   margin: calc(var(--w) * -0.575) 0 0 calc(var(--w) / -2);
   transform-style: preserve-3d;
   transform: rotateX(calc(var(--py) * -14deg - 12deg))
-    rotateY(calc(var(--scroll) * 1080deg + var(--px) * 25deg));
-  transition: transform 0.25s ease-out;
+    rotateY(calc(var(--scroll) * 360deg + var(--px) * 25deg));
+  transition: transform 0.6s ease-out;
 }
 
 .ab-face {
@@ -125,8 +126,9 @@
   background: color-mix(in srgb, var(--accent) 9%, rgba(8, 6, 18, 0.7));
   box-shadow: 0 0 22px color-mix(in srgb, var(--accent) 45%, transparent),
     inset 0 0 18px color-mix(in srgb, var(--accent) 25%, transparent);
-  transform: rotateY(calc(var(--i) * 36deg)) translateZ(var(--r));
-  backface-visibility: hidden;
+  transform: rotateY(calc(var(--i) * 360deg / var(--n))) translateZ(var(--r));
+  /* backface-visibility: hidden; */
+  margin: 0px 2px;
 }
 
 .ab-face .ab-icon {
@@ -347,7 +349,7 @@
   font-weight: 600;
   color: var(--text);
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(137, 137, 137, 0.4);
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 11px 22px;
